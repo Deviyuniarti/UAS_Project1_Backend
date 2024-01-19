@@ -29,17 +29,18 @@ class PatientController {
  }
  
 
- async store(req, res) {
-  //memanggil method create dari model patient 
-  //mengirim data dan callback
-  await Patient.create(req.body, (patient)=> {
-    const data = {
-        message: `Menambahkan data patient`,
-        data: patient,
-    };
-    res.json(data);
-});
-}
+async store(req, res) {
+    try {
+      const newPatient = await Patient.create(req.body);
+      const data = {
+        message: "Menambahkan data Patient",
+        data: newPatient,
+      };
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 
 
 async update(req, res) {
@@ -84,6 +85,8 @@ async destroy(req, res) {
   }
 }
 
+
+
 async show(req, res) {
   const { id } = req.params;
   const patient = await patient.find(id);
@@ -104,6 +107,98 @@ async show(req, res) {
   }
 }
 
+async search(req, res) {
+  try {
+    const keyword = req.query.keyword;
+
+    if (!keyword) {
+      return res.status(400).json({ message: 'Keyword is required' });
+    }
+
+    // Lakukan pencarian berdasarkan nama atau properti lainnya
+    const results = await Patient.search(keyword);
+
+    if (results && results.length > 0) {
+      const data = {
+        message: "Search results",
+        data: results
+      };
+      return res.status(200).json(data);
+    } else {
+      const data = {
+        message: "No matching results found",
+      };
+      return res.status(200).json(data);
+    }
+  } catch (error) {
+    console.error("Error searching patients:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+async getPositivePatients(req, res) {
+  try {
+    const positivePatients = await Patient.getPositivePatients();
+
+    const data = {
+      message: "List of Positive Patients",
+      data: positivePatients
+    };
+
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error("Error fetching positive patients:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+
+async getRecoveredPatients(req, res) {
+  try {
+    const recoveredPatients = await Patient.getRecoveredPatients();
+
+    const data = {
+      message: "List of Recovered Patients",
+      data: recoveredPatients
+    };
+
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error("Error fetching recovered patients:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+async getDeadPatients(req, res) {
+  try {
+    const deadPatients = await Patient.find({ isDead: true });
+
+    const data = {
+      message: "List of Dead Patients",
+      data: deadPatients
+    };
+
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error("Error fetching dead patients:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+async getDeadPatients(req, res) {
+  try {
+    const deadPatients = await Patient.getDeadPatients();
+
+    const data = {
+      message: "List of Dead Patients",
+      data: deadPatients
+    };
+
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error("Error fetching dead patients:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+}
 
 }
 
