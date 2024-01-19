@@ -171,21 +171,6 @@ async getRecoveredPatients(req, res) {
 
 async getDeadPatients(req, res) {
   try {
-    const deadPatients = await Patient.find({ isDead: true });
-
-    const data = {
-      message: "List of Dead Patients",
-      data: deadPatients
-    };
-
-    return res.status(200).json(data);
-  } catch (error) {
-    console.error("Error fetching dead patients:", error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-async getDeadPatients(req, res) {
-  try {
     const deadPatients = await Patient.getDeadPatients();
 
     const data = {
